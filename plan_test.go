@@ -264,7 +264,7 @@ func TestQueryPlanInlineFragment(t *testing.T) {
 			{
 				"ServiceURL": "A",
 				"ParentType": "Query",
-				"SelectionSet": "{ movies { ... on Movie { id title(language: French) __typename } } }",
+				"SelectionSet": "{ movies { ... on Movie { id title(language: French) } } }",
 				"InsertionPoint": null,
 				"Then": null
 			}
@@ -314,7 +314,7 @@ func TestQueryPlanInlineFragmentPlan(t *testing.T) {
 			{
 				"ServiceURL": "A",
 				"ParentType": "Query",
-				"SelectionSet": "{ movies { _id: id ... on Movie { id title(language: French) __typename } } }",
+				"SelectionSet": "{ movies { _id: id ... on Movie { id title(language: French) } } }",
 				"InsertionPoint": null,
 				"Then": [
 					{
@@ -347,7 +347,7 @@ func TestQueryPlanFragmentSpread1(t *testing.T) {
 			{
 				"ServiceURL": "A",
 				"ParentType": "Query",
-				"SelectionSet": "{ movies { ... on Movie { id title(language: French) __typename } } }",
+				"SelectionSet": "{ movies { ... on Movie { id title(language: French) } } }",
 				"InsertionPoint": null,
 				"Then": null
 			}
@@ -496,6 +496,7 @@ func TestQueryPlanExpandAbstractTypesWithPossibleBoundaryIds(t *testing.T) {
 		"name",
 		"... on Lion { _id: id }",
 		"... on Snake { _id: id }",
+		"__typename",
 	}
 	PlanTestFixture3.CheckUnorderedRootFieldSelections(t, query, rootFieldSelections)
 }
@@ -517,8 +518,9 @@ func TestQueryPlanInlineFragmentSpreadOfInterface(t *testing.T) {
 		"name",
 		"... on Lion { _id: id }",
 		"... on Snake { _id: id }",
-		"... on Lion { maneColor __typename }",
-		"... on Snake { _id: id __typename }",
+		"... on Lion { maneColor }",
+		"... on Snake { _id: id }",
+		"__typename",
 	}
 	PlanTestFixture3.CheckUnorderedRootFieldSelections(t, query, rootFieldSelections)
 }
@@ -632,13 +634,13 @@ func TestQueryPlanSupportsAliasing(t *testing.T) {
 }
 
 func TestQueryPlanSupportsUnions(t *testing.T) {
-	PlanTestFixture4.Check(t, "{ animals { ... on Dog { name } ... on Cat { name }  ... on Snake { name } } }", `
+	PlanTestFixture4.Check(t, "{ animals { ... on Dog { name } ... on Cat { name } ... on Snake { name } } }", `
     {
       "RootSteps": [
         {
           "ServiceURL": "A",
           "ParentType": "Query",
-          "SelectionSet": "{ animals { ... on Dog { name __typename } ... on Cat { name __typename } ... on Snake { name __typename } } }",
+          "SelectionSet": "{ animals { ... on Dog { name } ... on Cat { name } ... on Snake { name } __typename } }",
           "InsertionPoint": null,
           "Then": null
         }
